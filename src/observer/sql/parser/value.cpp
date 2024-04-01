@@ -115,7 +115,6 @@ Value::Value(const char *date, int len, int flag)
   }
   else{
     throw("wrongdate");
-    //ASSERT(false, "got an invalid value type");//shu ru bu he fa
   }
 }
 
