@@ -79,6 +79,35 @@ RC CastExpr::try_get_value(Value &value) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
+bool check_t(int val)
+{
+  int year, mon, day;
+  year = val / 10000;
+  mon = (val - year * 10000) / 100;
+  day = val - year * 10000 - mon * 100;
+  if(year<1970||year>2038||mon<1||mon>12||day<1||day>31){
+    return 0;
+  }
+  if(mon==4||mon==2||mon==6||mon==9||mon==11){
+    if(day>30){
+      return 0;
+    }
+    if(mon==2){
+      if((year%400==0||(year%4==0))&&(year%100!=0)){
+        if(day>29){
+          return 0;
+        }
+      }
+      else{
+        if(day>28){
+          return 0;
+        }
+      }
+    }
+  }
+  return 1;
+}
+
 ComparisonExpr::ComparisonExpr(CompOp comp, unique_ptr<Expression> left, unique_ptr<Expression> right)
     : comp_(comp), left_(std::move(left)), right_(std::move(right))
 {}
@@ -88,6 +117,22 @@ ComparisonExpr::~ComparisonExpr()
 
 RC ComparisonExpr::compare_value(const Value &left, const Value &right, bool &result) const
 {
+  if(left.attr_type()==DATES)
+  {
+    if(!check_t(left.get_date())){
+      ASSERT(false, "got an invalid value type");
+      RC rc = RC::INVALID_ARGUMENT;
+      return rc; 
+    }
+  }
+  if(right.attr_type()==DATES)
+  {
+    if(!check_t(right.get_date())){
+      ASSERT(false, "got an invalid value type");
+      RC rc = RC::INVALID_ARGUMENT;
+      return rc; 
+    }
+  }
   RC rc = RC::SUCCESS;
   int cmp_result = left.compare(right);
   result = false;

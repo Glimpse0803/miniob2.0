@@ -77,6 +77,35 @@ RC get_table_and_field(Db *db, Table *default_table, std::unordered_map<std::str
   return RC::SUCCESS;
 }
 
+bool check(int val)
+{
+  int year, mon, day;
+  year = val / 10000;
+  mon = (val - year * 10000) / 100;
+  day = val - year * 10000 - mon * 100;
+  if(year<1970||year>2038||mon<1||mon>12||day<1||day>31){
+    return 0;
+  }
+  if(mon==4||mon==2||mon==6||mon==9||mon==11){
+    if(day>30){
+      return 0;
+    }
+    if(mon==2){
+      if((year%400==0||(year%4==0))&&(year%100!=0)){
+        if(day>29){
+          return 0;
+        }
+      }
+      else{
+        if(day>28){
+          return 0;
+        }
+      }
+    }
+  }
+  return 1;
+}
+
 RC FilterStmt::create_filter_unit(Db *db, Table *default_table, std::unordered_map<std::string, Table *> *tables,
     const ConditionSqlNode &condition, FilterUnit *&filter_unit)
 {
@@ -127,5 +156,24 @@ RC FilterStmt::create_filter_unit(Db *db, Table *default_table, std::unordered_m
   filter_unit->set_comp(comp);
 
   // 检查两个类型是否能够比较
+  
+  // if(condition.right_value.attr_type()==DATES)//->right
+  // {
+  //   if(!check(condition.right_value.get_date())){
+  //     //LOG_WARN("INVALID DATE VALUE");
+  //     ASSERT(false, "got an invalid value type");
+  //     rc = RC::INVALID_ARGUMENT;
+  //     return rc;
+  //   }
+  // }
+  // if(condition.left_value.attr_type()==DATES)//->right
+  // {
+  //   if(!check(condition.right_value.get_date())){
+  //     //LOG_WARN("INVALID DATE VALUE");
+  //     ASSERT(false, "got an invalid value type");
+  //     rc = RC::INVALID_ARGUMENT;
+  //     return rc;
+  //   }
+  // }
   return rc;
 }

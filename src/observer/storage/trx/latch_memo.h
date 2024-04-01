@@ -25,6 +25,7 @@ class DiskBufferPool;
 
 namespace common {
 class SharedMutex;
+//int compare_int(void *v1, void *v2);
 }
 
 enum class LatchMemoType

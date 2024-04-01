@@ -63,6 +63,35 @@ public:
     return attr_length_;
   }
 
+  bool check(int val) const
+{
+  int year, mon, day;
+  year = val / 10000;
+  mon = (val - year * 10000) / 100;
+  day = val - year * 10000 - mon * 100;
+  if(year<1970||year>2038||mon<1||mon>12||day<1||day>31){
+    return 0;
+  }
+  if(mon==4||mon==2||mon==6||mon==9||mon==11){
+    if(day>30){
+      return 0;
+    }
+    if(mon==2){
+      if((year%400==0||(year%4==0))&&(year%100!=0)){
+        if(day>29){
+          return 0;
+        }
+      }
+      else{
+        if(day>28){
+          return 0;
+        }
+      }
+    }
+  }
+  return 1;
+}
+
   int operator()(const char *v1, const char *v2) const
   {
     switch (attr_type_) {
@@ -74,6 +103,9 @@ public:
       }
       case CHARS: {
         return common::compare_string((void *)v1, attr_length_, (void *)v2, attr_length_);
+      }
+      case DATES: {
+        return common::compare_int((void *)v1, (void *)v2);
       }
       default: {
         ASSERT(false, "unknown attr type. %d", attr_type_);
@@ -157,6 +189,9 @@ public:
           str.push_back(v[i]);
         }
         return str;
+      }
+      case DATES: {
+        return std::to_string(*(int *)v);
       }
       default: {
         ASSERT(false, "unknown attr type. %d", attr_type_);

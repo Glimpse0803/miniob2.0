@@ -17,6 +17,28 @@ See the Mulan PSL v2 for more details. */
 #include "storage/buffer/disk_buffer_pool.h"
 #include "common/lang/mutex.h"
 
+// namespace common{
+//   int compare_int(void *v1, void *v2) {
+//     // int *int_ptr1 = static_cast<int *>(v1);
+//     // int *int_ptr2 = static_cast<int *>(v2);
+//     // if (*int_ptr1 < *int_ptr2) {
+//     //   return -1;
+//     // } else if (*int_ptr1 > *int_ptr2) {
+//     //     return 1;
+//     // } else {
+//     //     return 0;
+//     // }
+//     int i1 = *(int *) v1;
+//     int i2 = *(int *) v2;
+//     if (i1 > i2)
+//       return 1;
+//     if (i1 < i2)
+//       return -1;
+//     if (i1 == i2)
+//       return 0;
+//   }
+// }
+
 LatchMemoItem::LatchMemoItem(LatchMemoType type, Frame *frame)
 {
   this->type = type;
