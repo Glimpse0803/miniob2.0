@@ -13,6 +13,8 @@ See the Mulan PSL v2 for more details. */
 //
 
 #include <memory>
+#include <string>
+#include<algorithm>
 
 #include "sql/executor/desc_table_executor.h"
 
@@ -24,6 +26,7 @@ See the Mulan PSL v2 for more details. */
 #include "sql/stmt/desc_table_stmt.h"
 #include "storage/db/db.h"
 #include "sql/operator/string_list_physical_operator.h"
+
 
 using namespace std;
 
@@ -57,7 +60,11 @@ RC DescTableExecutor::execute(SQLStageEvent *sql_event)
     const TableMeta &table_meta = table->table_meta();
     for (int i = table_meta.sys_field_num(); i < table_meta.field_num(); i++) {
       const FieldMeta *field_meta = table_meta.field(i);
-      oper->append({field_meta->name(), attr_type_to_string(field_meta->type()), std::to_string(field_meta->len())});
+      std::string str=attr_type_to_string(field_meta->type());
+      transform(str.begin(),str.end(),str.begin(),::toupper);
+      oper->append({field_meta->name(), str, std::to_string(field_meta->len())});
+      //transform(str.begin(),str.end(),str.begin(),::toupper);
+      //attr_type_to_string(field_meta->type())
     }
 
     sql_result->set_operator(unique_ptr<PhysicalOperator>(oper));

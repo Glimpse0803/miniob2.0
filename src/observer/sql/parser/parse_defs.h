@@ -34,10 +34,30 @@ class Expression;
  * Rel -> Relation
  * Attr -> Attribute
  */
+
+enum AggrOp
+{
+  AGGR_MAX,        ///< max
+  AGGR_MIN,        ///< min
+  AGGR_COUNT,      ///< count
+  AGGR_COUNT_ALL,  ///< count(*)
+  AGGR_AVG,        ///< avg
+  AGGR_SUM,        ///< sum
+  AGGR_NONE        ///< no aggr
+};
+
+// struct RelAttrSqlNode
+// {
+//   std::string relation_name;   ///< relation name (may be NULL) 表名
+//   std::string attribute_name;  ///< attribute name              属性名
+//   AggrOp      aggregation = AGGR_NONE;
+// };
 struct RelAttrSqlNode
 {
-  std::string relation_name;   ///< relation name (may be NULL) 表名
-  std::string attribute_name;  ///< attribute name              属性名
+  std::string relation_name;            ///< relation name (may be NULL) 表名
+  std::string attribute_name;           ///< attribute name              属性名
+  AggrOp      aggregation = AGGR_NONE;  ///< aggregation (may be empty)  聚合操作
+  bool        valid = true;             ///< valid                       是否合法
 };
 
 /**
@@ -92,6 +112,7 @@ struct SelectSqlNode
   std::vector<RelAttrSqlNode>     attributes;    ///< attributes in select clause
   std::vector<std::string>        relations;     ///< 查询的表
   std::vector<ConditionSqlNode>   conditions;    ///< 查询条件，使用AND串联起来多个条件
+  std::string                     aggregation;   ///< 聚合操作
 };
 
 /**
