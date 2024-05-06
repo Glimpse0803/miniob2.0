@@ -46,12 +46,6 @@ enum AggrOp
   AGGR_NONE        ///< no aggr
 };
 
-// struct RelAttrSqlNode
-// {
-//   std::string relation_name;   ///< relation name (may be NULL) 表名
-//   std::string attribute_name;  ///< attribute name              属性名
-//   AggrOp      aggregation = AGGR_NONE;
-// };
 struct RelAttrSqlNode
 {
   std::string relation_name;            ///< relation name (may be NULL) 表名
