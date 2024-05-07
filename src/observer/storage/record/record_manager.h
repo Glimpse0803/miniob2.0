@@ -174,6 +174,8 @@ public:
    */
   RC recover_insert_record(const char *data, const RID &rid);
 
+  RC update_record(const char *data, RID *rid);
+
   /**
    * @brief 删除指定的记录
    *

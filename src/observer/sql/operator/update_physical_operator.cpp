@@ -41,6 +41,7 @@ RC UpdatePhysicalOperator::next()
   PhysicalOperator *child = children_[0].get();
 
   std::vector<Record> insert_records;
+  std::vector<Record> delete_records;
   int count = 0;
   while (RC::SUCCESS == (rc = child->next())){
     Tuple *tuple = child->current_tuple();
@@ -81,7 +82,6 @@ RC UpdatePhysicalOperator::next()
         Value cell;
         if (target_index == i){
           cell.set_value(value_);
-
         }
         else{
           row_tuple->cell_at(i, cell);
@@ -99,9 +99,6 @@ RC UpdatePhysicalOperator::next()
       insert_records.emplace_back(new_record);
 
     }
-
-    std::cout<<"insert_record:"<<insert_records.size()<<std::endl;
-
   }
 
   for (int i=0;i<insert_records.size();++i){
