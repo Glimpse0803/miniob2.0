@@ -108,6 +108,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %union {
   ParsedSqlNode *                   sql_node;
   ConditionSqlNode *                condition;
+  JoinSqlNode *                     join_sql_node;
   Value *                           value;
   enum CompOp                       comp;
   enum AggrOp                       aggr;
@@ -147,6 +148,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %type <attr_info>           attr_def
 %type <value_list>          value_list
 %type <condition_list>      where
+%type <join_sql_node>       join_list
 %type <condition_list>      condition_list
 %type <rel_attr_list>       select_attr
 %type <relation_list>       rel_list
@@ -435,7 +437,7 @@ update_stmt:      /*  update 语句的语法解析树*/
     }
     ;
 select_stmt:        /*  select 语句的语法解析树*/
-    SELECT select_attr FROM ID rel_list where
+    SELECT select_attr FROM ID rel_list join_list where
     {
       $$ = new ParsedSqlNode(SCF_SELECT);
       if ($2 != nullptr) {
@@ -449,11 +451,17 @@ select_stmt:        /*  select 语句的语法解析树*/
       $$->selection.relations.push_back($4);
       std::reverse($$->selection.relations.begin(), $$->selection.relations.end());
 
-      if ($6 != nullptr) {
-        $$->selection.conditions.swap(*$6);
-        delete $6;
+      if ($7 != nullptr) {
+        $$->selection.conditions.swap(*$7);
+        delete $7;
       }
       free($4);
+
+      if ($6 != nullptr) {
+        $$->selection.relations.insert($$->selection.relations.end(), $6->relations.begin(), $6->relations.end());
+        $$->selection.conditions.insert($$->selection.conditions.end(), $6->conditions.begin(), $6->conditions.end());
+        delete $6;
+      }
     }
     ;
 calc_stmt:
@@ -661,6 +669,31 @@ rel_list:
       free($2);
     }
     ;
+join_list:
+    {
+      $$ = nullptr;
+    }
+    | INNER join_list {
+      $$ = $2;
+    }
+    | JOIN ID ON condition_list join_list {
+      $$ = new JoinSqlNode();
+
+      if ($4 != nullptr) {
+        $$->conditions.swap(*$4);
+        delete $4;
+      }
+
+      $$->relations.push_back($2);
+      // $$->conditions.push_back(*$4);
+      free($2);
+
+      if ($5 != nullptr) {
+        $$->relations.insert($$->relations.end(), $5->relations.begin(), $5->relations.end());
+        $$->conditions.insert($$->conditions.end(), $5->conditions.begin(), $5->conditions.end());
+        delete $5;
+      }
+    }
 where:
     /* empty */
     {
