@@ -105,10 +105,4 @@ int compare_string(void *arg1, int arg1_max_length, void *arg2, int arg2_max_len
   return 0;
 }
 
-// int compare_str_with_int(void *arg1, int arg1_max_length, void *arg2)
-// {
-//   const char *s1 = (const char *)arg1;
-//   const char *s2 = (const char *)arg2;
-//   int maxlen = arg1_max_length;
-// }
 } // namespace common

@@ -101,6 +101,8 @@ public:
   bool get_boolean() const;
   int get_date() const;
 
+
+
 private:
   AttrType attr_type_ = UNDEFINED;
   int length_ = 0;
@@ -113,3 +115,6 @@ private:
   } num_value_;
   std::string str_value_;
 };
+
+std::string floatString_to_String(std::string floatString);
+std::string removeFloatStringEndZero(std::string str);

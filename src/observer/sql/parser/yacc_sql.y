@@ -57,6 +57,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %token  SEMICOLON
         CREATE
         DROP
+        INNER
         TABLE
         TABLES
         INDEX
@@ -131,6 +132,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %token <string> ID
 %token <string> SSS
 %token <string> DATE_STR
+%token <string> JOIN
 //非终结符
 
 /** type 定义了各种解析后的结果输出的是什么类型。类型对应了 union 中的定义的成员变量名称 **/
@@ -685,7 +687,6 @@ join_list:
       }
 
       $$->relations.push_back($2);
-      // $$->conditions.push_back(*$4);
       free($2);
 
       if ($5 != nullptr) {

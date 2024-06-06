@@ -31,11 +31,11 @@ RC PredicatePushdownRewriter::rewrite(std::unique_ptr<LogicalOperator> &oper, bo
   }
 
   std::unique_ptr<LogicalOperator> &child_oper = oper->children().front();
-  if (!(child_oper->type() == LogicalOperatorType::TABLE_GET || child_oper->type() == LogicalOperatorType::TABLE_GET)) {
+  if (!(child_oper->type() == LogicalOperatorType::TABLE_GET || child_oper->type() == LogicalOperatorType::JOIN)) {
     return rc;
   }
 
-  auto table_get_oper = static_cast<TableGetLogicalOperator *>(child_oper.get());
+  //auto table_get_oper = static_cast<TableGetLogicalOperator *>(child_oper.get());
 
   std::vector<std::unique_ptr<Expression>> &predicate_oper_exprs = oper->expressions();
   if (predicate_oper_exprs.size() != 1) {
@@ -58,7 +58,7 @@ RC PredicatePushdownRewriter::rewrite(std::unique_ptr<LogicalOperator> &oper, bo
   // 开始pushdown
   if(child_oper->type() == LogicalOperatorType::TABLE_GET) {
     // predicate的子算子是table get
-    auto join_oper = static_cast<JoinLogicalOperator *>(child_oper.get());
+    auto table_get_oper = static_cast<TableGetLogicalOperator *>(child_oper.get());
     change_made = true;
     table_get_oper->set_predicates(std::move(pushdown_exprs));
   }
